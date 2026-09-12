@@ -63,11 +63,11 @@ table {
   border-collapse: collapse;
 }
 th, td {
-  border: 1px solid #ccc;
+  border: 1px solid #070707;
   padding: 0.5rem;
   text-align: left;
 }
 th {
-  background-color: #f5f5f5;
+  background-color: #080808;
 }
 </style>
