@@ -20,7 +20,7 @@ async function getInvoices() {
 
   try {
     // Vue sends request to Hono
-    const res = await fetch('http://localhost:3000/invoices')
+    const res = await fetch('https://autocount-hono-backend.w3ll123.workers.dev/invoices')  
     if (!res.ok) {
       throw new Error('Failed to fetch invoices')
     }
