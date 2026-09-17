@@ -21,7 +21,6 @@ async function getInvoices() {
   try {
     // Vue sends request to Hono
     const res = await fetch('http://localhost:3000/invoices')
-
     if (!res.ok) {
       throw new Error('Failed to fetch invoices')
     }
