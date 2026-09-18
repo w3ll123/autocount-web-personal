@@ -1,6 +1,5 @@
 <template>
   <aside class="sidebar">
-    <!-- BRAND -->
     <div class="brand">
       <div class="brand-logo">AC</div>
       <div>
@@ -9,7 +8,6 @@
       </div>
     </div>
 
-    <!-- NAV -->
     <nav class="nav">
       <RouterLink to="/" class="nav-link" active-class="active">
         <span class="dot"></span>
@@ -26,13 +24,17 @@
         Customers
       </RouterLink>
 
+      <RouterLink to="/items" class="nav-link" active-class="active">
+        <span class="dot"></span>
+        Items
+      </RouterLink>
+
       <RouterLink to="/reports" class="nav-link" active-class="active">
         <span class="dot"></span>
         Reports
       </RouterLink>
     </nav>
 
-    <!-- FOOTER -->
     <div class="footer">
       <div class="user">
         <div class="avatar">R</div>
@@ -47,14 +49,6 @@
 </template>
 
 <style scoped>
-/* Palette:
-   Sidebar bg:    #0b1220 (deep navy, hampir hitam)
-   Sidebar hover: #131c2e
-   Active bg:     #14b8a6 (teal)
-   Text soft:     #94a3b8
-   Text bright:   #e2e8f0
-*/
-
 .sidebar {
   width: 240px;
   min-height: 100vh;
@@ -66,7 +60,6 @@
   border-right: 1px solid #1e293b;
 }
 
-/* BRAND */
 .brand {
   display: flex;
   align-items: center;
@@ -103,7 +96,6 @@
   color: #64748b;
 }
 
-/* NAV */
 .nav {
   display: flex;
   flex-direction: column;
@@ -148,7 +140,6 @@
   background: #0b1220;
 }
 
-/* FOOTER */
 .footer {
   border-top: 1px solid #1e293b;
   padding-top: 16px;
