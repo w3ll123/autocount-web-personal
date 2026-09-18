@@ -16,7 +16,7 @@ app.get('/', (c) => {
 app.get('/invoices', async (c) => {
   try {
     // Hono sends request to Java API
-    const res = await fetch('https://races-medium-lands-plenty.trycloudflare.com/invoices')
+const res = await fetch('https://course-lawyer-completion-electricity.trycloudflare.com/invoices')  
     if (!res.ok) {
       return c.json({ error: 'Java API returned an error' }, 502)
     }
