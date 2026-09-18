@@ -3,10 +3,23 @@ import Sidebar from './components/Sidebar.vue'
 </script>
 
 <template>
-  <div class="flex min-h-screen bg-slate-100">
+  <div class="layout">
     <Sidebar />
-    <main class="flex-1 p-8">
+    <main class="main">
       <RouterView />
     </main>
   </div>
 </template>
+
+<style scoped>
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f1f5f9;
+}
+.main {
+  flex: 1;
+  padding: 32px;
+  overflow-x: auto;
+}
+</style>

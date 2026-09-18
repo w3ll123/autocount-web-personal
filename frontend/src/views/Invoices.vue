@@ -34,12 +34,15 @@ async function getInvoices() {
   }
 }
 
-function filteredInvoices() {
+const filteredInvoices = () => {
   const search = searchText.value.toLowerCase()
-  return invoices.value.filter((invoice) =>
-    invoice.docNo.toLowerCase().includes(search) ||
-    invoice.debtorCode.toLowerCase().includes(search)
-  )
+
+  return invoices.value.filter((invoice) => {
+    return (
+      invoice.docNo.toLowerCase().includes(search) ||
+      invoice.debtorCode.toLowerCase().includes(search)
+    )
+  })
 }
 
 function formatDate(date: string) {
@@ -52,41 +55,45 @@ function formatCurrency(total: number) {
 </script>
 
 <template>
-  <div class="page">
-    <!-- HEADER -->
-    <div class="page-header">
+  <div class="invoice-page">
+    <div class="page-heading">
       <div>
         <p class="page-label">BUSINESS MANAGEMENT</p>
-        <h1 class="page-title">Invoices</h1>
-        <p class="page-subtitle">View and manage invoice records from AutoCount.</p>
+        <h1>Invoices</h1>
+        <p class="page-description">
+          View and manage invoice records.
+        </p>
       </div>
 
-      <button class="btn-primary" @click="getInvoices" :disabled="loading">
+      <button class="get-button" @click="getInvoices" :disabled="loading">
         {{ loading ? 'Loading...' : 'Get Invoices' }}
       </button>
     </div>
 
-    <!-- SUMMARY CARDS -->
-    <div class="summary-grid">
-      <div class="summary-card">
-        <p class="summary-label">Total Invoices</p>
-        <p class="summary-value">{{ invoices.length }}</p>
+    <div class="summary-card">
+      <div>
+        <p class="summary-title">Total Invoices</p>
+        <h2>{{ invoices.length }}</h2>
       </div>
 
-      <div class="summary-card">
-        <p class="summary-label">Total Amount</p>
-        <p class="summary-value accent">
-          RM {{ invoices.reduce((sum, inv) => sum + inv.total, 0).toFixed(2) }}
-        </p>
+      <div>
+        <p class="summary-title">Total Amount</p>
+        <h2>
+          RM
+          {{
+            invoices
+              .reduce((sum, invoice) => sum + invoice.total, 0)
+              .toFixed(2)
+          }}
+        </h2>
       </div>
     </div>
 
-    <!-- TABLE CARD -->
-    <div class="card">
-      <div class="card-header">
+    <div class="invoice-card">
+      <div class="table-heading">
         <div>
-          <h2 class="card-title">Invoice Records</h2>
-          <p class="card-subtitle">All invoice records retrieved from AutoCount.</p>
+          <h2>Invoice Records</h2>
+          <p>All invoice records retrieved from AutoCount.</p>
         </div>
 
         <input
@@ -97,37 +104,47 @@ function formatCurrency(total: number) {
         />
       </div>
 
-      <!-- ERROR -->
-      <p v-if="error" class="error-msg">{{ error }}</p>
+      <p v-if="error" class="error-message">
+        {{ error }}
+      </p>
 
-      <!-- LOADING -->
-      <div v-else-if="loading" class="state">Loading invoice records...</div>
+      <div v-if="loading" class="empty-message">
+        Loading invoice records...
+      </div>
 
-      <!-- EMPTY -->
-      <div v-else-if="!filteredInvoices().length" class="state">
+      <div
+        v-else-if="!filteredInvoices().length"
+        class="empty-message"
+      >
         No invoice records found.
       </div>
 
-      <!-- TABLE -->
-      <div v-else class="table-wrap">
+      <div v-else class="table-wrapper">
         <table>
           <thead>
             <tr>
               <th>No.</th>
-              <th>Document No</th>
-              <th>Customer</th>
-              <th>Date</th>
-              <th class="right">Total</th>
+              <th>Document Number</th>
+              <th>Customer Code</th>
+              <th>Invoice Date</th>
+              <th class="amount-column">Total Amount</th>
             </tr>
           </thead>
 
           <tbody>
-            <tr v-for="(inv, index) in filteredInvoices()" :key="inv.docNo">
-              <td class="muted">{{ index + 1 }}</td>
-              <td class="doc">{{ inv.docNo }}</td>
-              <td>{{ inv.debtorCode }}</td>
-              <td class="muted">{{ formatDate(inv.docDate) }}</td>
-              <td class="right amount">{{ formatCurrency(inv.total) }}</td>
+            <tr
+              v-for="(invoice, index) in filteredInvoices()"
+              :key="invoice.docNo"
+            >
+              <td>{{ index + 1 }}</td>
+              <td class="document-number">
+                {{ invoice.docNo }}
+              </td>
+              <td>{{ invoice.debtorCode }}</td>
+              <td>{{ formatDate(invoice.docDate) }}</td>
+              <td class="amount-column">
+                {{ formatCurrency(invoice.total) }}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -137,245 +154,210 @@ function formatCurrency(total: number) {
 </template>
 
 <style scoped>
-/* ====== PALETTE ======
-   Ink:       #0f172a
-   Muted:     #64748b
-   Border:    #e2e8f0
-   Bg soft:   #f8fafc
-   Accent:    #0f766e   (teal, bukan biru)
-   Accent-2:  #facc15   (kuning halus)
-======================== */
-
-.page {
-  max-width: 1200px;
+.invoice-page {
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
-  color: #0f172a;
 }
 
-/* HEADER */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.page-label {
-  margin: 0 0 8px;
-  color: #0f766e;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-
-.page-title {
-  margin: 0;
-  font-size: 32px;
-  font-weight: 700;
-  color: #0f172a;
-  letter-spacing: -0.5px;
-}
-
-.page-subtitle {
-  margin: 6px 0 0;
-  color: #64748b;
-  font-size: 14px;
-}
-
-/* BUTTON */
-.btn-primary {
-  padding: 12px 22px;
-  background: #0f766e;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.btn-primary:hover {
-  background: #115e59;
-}
-
-.btn-primary:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-}
-
-/* SUMMARY */
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.summary-card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px 24px;
-}
-
-.summary-label {
-  margin: 0 0 8px;
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.summary-value {
-  margin: 0;
-  font-size: 26px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.summary-value.accent {
-  color: #0f766e;
-}
-
-/* TABLE CARD */
-.card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.card-header {
+.page-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 25px;
 }
 
-.card-title {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.card-subtitle {
-  margin: 4px 0 0;
-  color: #64748b;
+.page-label {
+  margin: 0 0 8px;
+  color: #2563eb;
   font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
-.search-input {
-  width: 240px;
-  padding: 9px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 7px;
-  font-size: 13px;
-  outline: none;
-  transition: border 0.15s ease;
+h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 34px;
 }
 
-.search-input:focus {
-  border-color: #0f766e;
+.page-description {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 15px;
 }
 
-/* STATE */
-.state {
-  padding: 48px 24px;
-  text-align: center;
+.get-button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 13px 22px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.get-button:hover {
+  background: #1d4ed8;
+}
+
+.get-button:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+.summary-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.summary-card > div {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 22px;
+}
+
+.summary-title {
+  margin: 0 0 8px;
   color: #64748b;
   font-size: 14px;
 }
 
-.error-msg {
-  padding: 14px 24px;
+.summary-card h2 {
   margin: 0;
-  color: #b91c1c;
-  background: #fef2f2;
+  color: #0f172a;
+  font-size: 27px;
+}
+
+.invoice-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 25px;
+  overflow: hidden;
+}
+
+.table-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.table-heading h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 21px;
+}
+
+.table-heading p {
+  margin: 6px 0 0;
+  color: #64748b;
   font-size: 13px;
 }
 
-/* TABLE */
-.table-wrap {
+.search-input {
+  width: 240px;
+  padding: 11px 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  outline: none;
+  font-size: 14px;
+}
+
+.search-input:focus {
+  border-color: #2563eb;
+}
+
+.table-wrapper {
+  width: 100%;
   overflow-x: auto;
 }
 
 table {
   width: 100%;
-  min-width: 720px;
+  min-width: 750px;
   border-collapse: collapse;
+  table-layout: auto;
 }
 
 thead {
-  background: #f8fafc;
+  background: #172554;
 }
 
 th {
+  padding: 15px 16px;
+  color: white;
   text-align: left;
-  padding: 12px 24px;
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748b;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  border-bottom: 1px solid #e2e8f0;
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
 }
 
 td {
-  padding: 16px 24px;
-  font-size: 14px;
+  padding: 16px;
+  border-bottom: 1px solid #e2e8f0;
   color: #334155;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-tbody tr:last-child td {
-  border-bottom: none;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 tbody tr:hover {
-  background: #f8fafc;
+  background: #eff6ff;
 }
 
-.doc {
-  font-weight: 600;
-  color: #0f766e;
+.document-number {
+  color: #2563eb;
+  font-weight: bold;
 }
 
-.muted {
-  color: #94a3b8;
-}
-
-.right {
+.amount-column {
   text-align: right;
+  font-weight: bold;
 }
 
-.amount {
-  font-weight: 700;
-  color: #0f172a;
+.error-message {
+  padding: 14px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 7px;
+}
+
+.empty-message {
+  padding: 40px 20px;
+  text-align: center;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 8px;
 }
 
 @media (max-width: 768px) {
-  .page-header,
-  .card-header {
-    flex-direction: column;
+  .page-heading {
     align-items: flex-start;
+    flex-direction: column;
   }
 
-  .summary-grid {
+  .summary-card {
     grid-template-columns: 1fr;
+  }
+
+  .table-heading {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .search-input {
     width: 100%;
   }
 
-  th, td {
-    padding: 12px 16px;
+  .invoice-card {
+    padding: 16px;
   }
 }
 </style>
