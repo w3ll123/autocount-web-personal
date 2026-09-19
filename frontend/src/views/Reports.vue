@@ -4,4 +4,3 @@
     <p class="text-slate-500">Reports will appear here.</p>
   </div>
 </template>
-s

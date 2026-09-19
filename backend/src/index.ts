@@ -11,40 +11,31 @@ app.get('/', (c) => {
 
 app.get('/invoices', async (c) => {
   try {
-    const res = await fetch('https://course-lawyer-completion-electricity.trycloudflare.com/invoices')
-    if (!res.ok) {
-      return c.json({ error: 'Java API returned an error' }, 502)
-    }
-    const data = await res.json()
-    return c.json(data)
+    const res = await fetch('https://laptop-doci836v-1.tail2c0f36.ts.net/invoices')
+    const data = await res.text()
+    return c.body(data, 200, { 'Content-Type': 'application/json' })
   } catch (error) {
-    return c.json({ error: 'Failed to fetch from Java API' }, 500)
+    return c.json({ error: 'Failed: ' + error.message }, 500)
   }
 })
 
 app.get('/customers', async (c) => {
   try {
-    const res = await fetch('https://course-lawyer-completion-electricity.trycloudflare.com/customers')
-    if (!res.ok) {
-      return c.json({ error: 'Java API returned an error' }, 502)
-    }
-    const data = await res.json()
-    return c.json(data)
+    const res = await fetch('https://laptop-doci836v-1.tail2c0f36.ts.net/customers')
+    const data = await res.text()
+    return c.body(data, 200, { 'Content-Type': 'application/json' })
   } catch (error) {
-    return c.json({ error: 'Failed to fetch from Java API' }, 500)
+    return c.json({ error: 'Failed: ' + error.message }, 500)
   }
 })
 
 app.get('/items', async (c) => {
   try {
-    const res = await fetch('https://course-lawyer-completion-electricity.trycloudflare.com/items')
-    if (!res.ok) {
-      return c.json({ error: 'Java API returned an error' }, 502)
-    }
-    const data = await res.json()
-    return c.json(data)
+    const res = await fetch('https://laptop-doci836v-1.tail2c0f36.ts.net/items')
+    const data = await res.text()
+    return c.body(data, 200, { 'Content-Type': 'application/json' })
   } catch (error) {
-    return c.json({ error: 'Failed to fetch from Java API' }, 500)
+    return c.json({ error: 'Failed: ' + error.message }, 500)
   }
 })
 
