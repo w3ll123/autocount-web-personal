@@ -34,15 +34,12 @@ async function getInvoices() {
   }
 }
 
-const filteredInvoices = () => {
+function filteredInvoices() {
   const search = searchText.value.toLowerCase()
-
-  return invoices.value.filter((invoice) => {
-    return (
-      invoice.docNo.toLowerCase().includes(search) ||
-      invoice.debtorCode.toLowerCase().includes(search)
-    )
-  })
+  return invoices.value.filter((invoice) =>
+    invoice.docNo.toLowerCase().includes(search) ||
+    invoice.debtorCode.toLowerCase().includes(search)
+  )
 }
 
 function formatDate(date: string) {
@@ -55,45 +52,38 @@ function formatCurrency(total: number) {
 </script>
 
 <template>
-  <div class="invoice-page">
-    <div class="page-heading">
+  <div class="page">
+    <div class="page-header">
       <div>
         <p class="page-label">BUSINESS MANAGEMENT</p>
-        <h1>Invoices</h1>
-        <p class="page-description">
-          View and manage invoice records.
-        </p>
+        <h1 class="page-title">Invoices</h1>
+        <p class="page-subtitle">View and manage invoice records from AutoCount.</p>
       </div>
 
-      <button class="get-button" @click="getInvoices" :disabled="loading">
+      <button class="btn-primary" @click="getInvoices" :disabled="loading">
         {{ loading ? 'Loading...' : 'Get Invoices' }}
       </button>
     </div>
 
-    <div class="summary-card">
-      <div>
-        <p class="summary-title">Total Invoices</p>
-        <h2>{{ invoices.length }}</h2>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <p class="summary-label">Total Invoices</p>
+        <p class="summary-value">{{ invoices.length }}</p>
       </div>
 
-      <div>
-        <p class="summary-title">Total Amount</p>
-        <h2>
-          RM
-          {{
-            invoices
-              .reduce((sum, invoice) => sum + invoice.total, 0)
-              .toFixed(2)
-          }}
-        </h2>
+      <div class="summary-card">
+        <p class="summary-label">Total Amount</p>
+        <p class="summary-value accent">
+          RM {{ invoices.reduce((sum, inv) => sum + inv.total, 0).toFixed(2) }}
+        </p>
       </div>
     </div>
 
-    <div class="invoice-card">
-      <div class="table-heading">
+    <div class="card">
+      <div class="card-header">
         <div>
-          <h2>Invoice Records</h2>
-          <p>All invoice records retrieved from AutoCount.</p>
+          <h2 class="card-title">Invoice Records</h2>
+          <p class="card-subtitle">All invoice records retrieved from AutoCount.</p>
         </div>
 
         <input
@@ -104,260 +94,349 @@ function formatCurrency(total: number) {
         />
       </div>
 
-      <p v-if="error" class="error-message">
-        {{ error }}
-      </p>
+      <p v-if="error" class="error-msg">{{ error }}</p>
 
-      <div v-if="loading" class="empty-message">
-        Loading invoice records...
-      </div>
+      <div v-else-if="loading" class="state">Loading invoice records...</div>
 
-      <div
-        v-else-if="!filteredInvoices().length"
-        class="empty-message"
-      >
+      <div v-else-if="!filteredInvoices().length" class="state">
         No invoice records found.
       </div>
 
-      <div v-else class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>No.</th>
-              <th>Document Number</th>
-              <th>Customer Code</th>
-              <th>Invoice Date</th>
-              <th class="amount-column">Total Amount</th>
-            </tr>
-          </thead>
+      <div v-else>
+        <div class="table-wrap desktop-only">
+          <table>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Document No</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th class="right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(inv, index) in filteredInvoices()" :key="inv.docNo">
+                <td class="muted">{{ index + 1 }}</td>
+                <td class="doc">{{ inv.docNo }}</td>
+                <td>{{ inv.debtorCode }}</td>
+                <td class="muted">{{ formatDate(inv.docDate) }}</td>
+                <td class="right amount">{{ formatCurrency(inv.total) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-          <tbody>
-            <tr
-              v-for="(invoice, index) in filteredInvoices()"
-              :key="invoice.docNo"
-            >
-              <td>{{ index + 1 }}</td>
-              <td class="document-number">
-                {{ invoice.docNo }}
-              </td>
-              <td>{{ invoice.debtorCode }}</td>
-              <td>{{ formatDate(invoice.docDate) }}</td>
-              <td class="amount-column">
-                {{ formatCurrency(invoice.total) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="mobile-only mobile-cards">
+          <div
+            v-for="(inv, index) in filteredInvoices()"
+            :key="inv.docNo"
+            class="mobile-card"
+          >
+            <div class="mobile-card-header">
+              <span class="mobile-doc">{{ inv.docNo }}</span>
+              <span class="mobile-amount">{{ formatCurrency(inv.total) }}</span>
+            </div>
+            <div class="mobile-card-body">
+              <div class="mobile-row">
+                <span class="mobile-label">Customer</span>
+                <span>{{ inv.debtorCode }}</span>
+              </div>
+              <div class="mobile-row">
+                <span class="mobile-label">Date</span>
+                <span>{{ formatDate(inv.docDate) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.invoice-page {
-  width: 100%;
-  max-width: 1400px;
+.page {
+  max-width: 1200px;
   margin: 0 auto;
+  color: #0f172a;
 }
 
-.page-heading {
+.page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  margin-bottom: 25px;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .page-label {
   margin: 0 0 8px;
-  color: #2563eb;
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 1px;
+  color: #0f766e;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
 }
 
-h1 {
+.page-title {
   margin: 0;
+  font-size: 32px;
+  font-weight: 700;
   color: #0f172a;
-  font-size: 34px;
 }
 
-.page-description {
-  margin: 8px 0 0;
+.page-subtitle {
+  margin: 6px 0 0;
   color: #64748b;
-  font-size: 15px;
+  font-size: 14px;
 }
 
-.get-button {
-  background: #2563eb;
+.btn-primary {
+  padding: 12px 22px;
+  background: #0f766e;
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 13px 22px;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
 }
 
-.get-button:hover {
-  background: #1d4ed8;
+.btn-primary:hover {
+  background: #115e59;
 }
 
-.get-button:disabled {
-  background: #93c5fd;
+.btn-primary:disabled {
+  background: #94a3b8;
   cursor: not-allowed;
 }
 
-.summary-card {
+.summary-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-  margin-bottom: 25px;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-.summary-card > div {
+.summary-card {
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 22px;
+  padding: 20px 24px;
 }
 
-.summary-title {
+.summary-label {
   margin: 0 0 8px;
   color: #64748b;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-.summary-card h2 {
+.summary-value {
   margin: 0;
+  font-size: 26px;
+  font-weight: 700;
   color: #0f172a;
-  font-size: 27px;
 }
 
-.invoice-card {
+.summary-value.accent {
+  color: #0f766e;
+}
+
+.card {
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 25px;
   overflow: hidden;
 }
 
-.table-heading {
+.card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  margin-bottom: 20px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.table-heading h2 {
+.card-title {
   margin: 0;
+  font-size: 17px;
+  font-weight: 600;
   color: #0f172a;
-  font-size: 21px;
 }
 
-.table-heading p {
-  margin: 6px 0 0;
+.card-subtitle {
+  margin: 4px 0 0;
   color: #64748b;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .search-input {
   width: 240px;
-  padding: 11px 13px;
+  padding: 9px 12px;
   border: 1px solid #cbd5e1;
   border-radius: 7px;
+  font-size: 13px;
   outline: none;
-  font-size: 14px;
 }
 
 .search-input:focus {
-  border-color: #2563eb;
+  border-color: #0f766e;
 }
 
-.table-wrapper {
-  width: 100%;
+.state {
+  padding: 48px 24px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.error-msg {
+  padding: 14px 24px;
+  margin: 0;
+  color: #b91c1c;
+  background: #fef2f2;
+  font-size: 13px;
+}
+
+.table-wrap {
   overflow-x: auto;
 }
 
 table {
   width: 100%;
-  min-width: 750px;
+  min-width: 720px;
   border-collapse: collapse;
-  table-layout: auto;
 }
 
 thead {
-  background: #172554;
+  background: #f8fafc;
 }
 
 th {
-  padding: 15px 16px;
-  color: white;
   text-align: left;
-  font-size: 13px;
-  font-weight: bold;
-  white-space: nowrap;
+  padding: 12px 24px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 td {
-  padding: 16px;
-  border-bottom: 1px solid #e2e8f0;
-  color: #334155;
+  padding: 16px 24px;
   font-size: 14px;
-  white-space: nowrap;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
 }
 
 tbody tr:hover {
-  background: #eff6ff;
-}
-
-.document-number {
-  color: #2563eb;
-  font-weight: bold;
-}
-
-.amount-column {
-  text-align: right;
-  font-weight: bold;
-}
-
-.error-message {
-  padding: 14px;
-  background: #fee2e2;
-  color: #b91c1c;
-  border-radius: 7px;
-}
-
-.empty-message {
-  padding: 40px 20px;
-  text-align: center;
-  color: #64748b;
   background: #f8fafc;
-  border-radius: 8px;
+}
+
+.doc {
+  font-weight: 600;
+  color: #0f766e;
+}
+
+.muted {
+  color: #94a3b8;
+}
+
+.right {
+  text-align: right;
+}
+
+.amount {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Mobile: card view */
+.mobile-only {
+  display: none;
 }
 
 @media (max-width: 768px) {
-  .page-heading {
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: block;
+  }
+
+  .page-header,
+  .card-header {
+    flex-direction: column;
     align-items: flex-start;
-    flex-direction: column;
   }
 
-  .summary-card {
+  .summary-grid {
     grid-template-columns: 1fr;
-  }
-
-  .table-heading {
-    align-items: stretch;
-    flex-direction: column;
   }
 
   .search-input {
     width: 100%;
   }
 
-  .invoice-card {
+  .mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     padding: 16px;
+  }
+
+  .mobile-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 12px;
+  }
+
+  .mobile-doc {
+    font-weight: 600;
+    color: #0f766e;
+    font-size: 15px;
+  }
+
+  .mobile-amount {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 16px;
+  }
+
+  .mobile-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mobile-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+  }
+
+  .mobile-label {
+    color: #64748b;
+    font-size: 13px;
   }
 }
 </style>

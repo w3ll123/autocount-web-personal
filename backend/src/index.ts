@@ -11,7 +11,7 @@ app.get('/', (c) => {
 
 app.get('/invoices', async (c) => {
   try {
-    const res = await fetch('https://laptop-doci836v-1.tail2c0f36.ts.net/invoices')
+    const res = await fetch('https://laptop-doci836v.tail2c0f36.ts.net/invoices')
     const data = await res.text()
     return c.body(data, 200, { 'Content-Type': 'application/json' })
   } catch (error) {
@@ -21,7 +21,7 @@ app.get('/invoices', async (c) => {
 
 app.get('/customers', async (c) => {
   try {
-    const res = await fetch('https://laptop-doci836v-1.tail2c0f36.ts.net/customers')
+    const res = await fetch('https://laptop-doci836v.tail2c0f36.ts.net/customers')
     const data = await res.text()
     return c.body(data, 200, { 'Content-Type': 'application/json' })
   } catch (error) {
@@ -31,7 +31,7 @@ app.get('/customers', async (c) => {
 
 app.get('/items', async (c) => {
   try {
-    const res = await fetch('https://laptop-doci836v-1.tail2c0f36.ts.net/items')
+    const res = await fetch('https://laptop-doci836v.tail2c0f36.ts.net/items')
     const data = await res.text()
     return c.body(data, 200, { 'Content-Type': 'application/json' })
   } catch (error) {
