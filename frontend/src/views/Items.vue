@@ -16,7 +16,7 @@ async function getItems() {
   loading.value = true
   error.value = ''
   try {
-    const res = await fetch('https://autocount-hono-backend.w3ll123.workers.dev/items')
+    const res = await fetch('/items')
     if (!res.ok) throw new Error('Failed')
     items.value = await res.json()
   } catch (e) {

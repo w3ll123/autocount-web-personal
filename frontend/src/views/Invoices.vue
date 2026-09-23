@@ -18,10 +18,7 @@ async function getInvoices() {
   error.value = ''
 
   try {
-    const res = await fetch(
-      'https://autocount-hono-backend.w3ll123.workers.dev/invoices'
-    )
-
+const res = await fetch('/invoices')
     if (!res.ok) {
       throw new Error('Failed to fetch invoices')
     }

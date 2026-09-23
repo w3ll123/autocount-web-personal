@@ -15,7 +15,7 @@ async function getCustomers() {
   loading.value = true
   error.value = ''
   try {
-    const res = await fetch('https://autocount-hono-backend.w3ll123.workers.dev/customers')
+    const res = await fetch('/customers')
     if (!res.ok) throw new Error('Failed')
     customers.value = await res.json()
   } catch (e) {
