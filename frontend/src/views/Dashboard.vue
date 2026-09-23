@@ -22,6 +22,8 @@ ChartJS.register(
   ArcElement
 )
 
+const API = 'https://autocount-hono-backend.w3ll123.workers.dev'
+
 interface Summary {
   totalInvoices: number
   totalSales: number
@@ -58,9 +60,9 @@ async function loadDashboard() {
   error.value = ''
   try {
     const [summaryRes, monthlyRes, topRes] = await Promise.all([
-      fetch('/dashboard/summary'),
-      fetch('/sales/monthly'),
-      fetch('/dashboard/top-customers')
+      fetch(`${API}/dashboard/summary`),
+      fetch(`${API}/sales/monthly`),
+      fetch(`${API}/dashboard/top-customers`)
     ])
 
     summary.value = await summaryRes.json()
