@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+const API = 'https://autocount-hono-backend.w3ll123.workers.dev'
+
 interface Item {
   code: string
   description: string
@@ -16,7 +18,7 @@ async function getItems() {
   loading.value = true
   error.value = ''
   try {
-    const res = await fetch('/items')
+    const res = await fetch(`${API}/items`)
     if (!res.ok) throw new Error('Failed')
     items.value = await res.json()
   } catch (e) {
@@ -65,12 +67,8 @@ function filteredItems() {
       </div>
 
       <p v-if="error" class="error-msg">{{ error }}</p>
-
       <div v-else-if="loading" class="state">Loading items...</div>
-
-      <div v-else-if="!filteredItems().length" class="state">
-        No item records found.
-      </div>
+      <div v-else-if="!filteredItems().length" class="state">No item records found.</div>
 
       <div v-else class="table-wrap">
         <table>
@@ -102,7 +100,7 @@ function filteredItems() {
 .page-label { margin: 0 0 8px; color: #0f766e; font-size: 11px; font-weight: 700; letter-spacing: 2px; }
 .page-title { margin: 0; font-size: 32px; font-weight: 700; color: #0f172a; }
 .page-subtitle { margin: 6px 0 0; color: #64748b; font-size: 14px; }
-.btn-primary { padding: 12px 22px; background: #0f766e; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.btn-primary { padding: 12px 22px; background: #0f766e; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .btn-primary:hover { background: #115e59; }
 .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
 .summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
